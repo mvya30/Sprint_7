@@ -2,6 +2,7 @@ import requests
 import allure
 
 from curl import Urls
+from data import CourierMessages
 
 @allure.feature("Создание курьера")
 class TestCreateCourier:
@@ -9,15 +10,14 @@ class TestCreateCourier:
     @allure.title("Успешное создание курьера")
     @allure.description("Проверка создания курьера с корректными данными.")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_create_courier_success(self, courier_data):
-        response = requests.post(
-            Urls.CREATE_COURIER_URL,
-            data=courier_data,
-        )
+
+    def test_create_courier_success(self, courier_helper):
+        response, payload = courier_helper.register_new_courier_and_return_login_password()
 
         assert response.status_code == 201
         assert response.json() == {"ok": True}
-
+        assert payload["login"] is not None 
+    
     @allure.title("Создание двух одинаковых курьеров")
     @allure.description("Проверка, что нельзя создать двух курьеров с одинаковыми данными.")
     @allure.severity(allure.severity_level.NORMAL)
@@ -33,7 +33,7 @@ class TestCreateCourier:
 
         assert first_response.status_code == 201
         assert second_response.status_code == 409
-        assert second_response.json()["message"] == "Этот логин уже используется"
+        assert second_response.json()["message"] == CourierMessages.LOGIN_ALREADY_USED
 
     @allure.title("Создание курьера без логина")
     @allure.description("Проверка ошибки при отсутствии обязательного поля login.")
@@ -48,9 +48,7 @@ class TestCreateCourier:
         )
 
         assert response.status_code == 400
-        assert response.json()["message"] == (
-            "Недостаточно данных для создания учетной записи"
-        )
+        assert response.json()["message"] == CourierMessages.NOT_ENOUGH_DATA
 
     @allure.title("Создание курьера без пароля")
     @allure.description("Проверка ошибки при отсутствии обязательного поля password.")
@@ -65,9 +63,7 @@ class TestCreateCourier:
         )
 
         assert response.status_code == 400
-        assert response.json()["message"] == (
-            "Недостаточно данных для создания учетной записи"
-        )
+        assert response.json()["message"] == CourierMessages.NOT_ENOUGH_DATA
 
     @allure.title("Создание курьера с уже существующим логином")
     @allure.description("Проверка ошибки при регистрации курьера с занятым логином.")
@@ -89,4 +85,5 @@ class TestCreateCourier:
         )
 
         assert response.status_code == 409
-        assert response.json()["message"] == "Этот логин уже используется"
+        assert response.json()["message"] == CourierMessages.LOGIN_ALREADY_USED
+        

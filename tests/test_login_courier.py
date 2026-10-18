@@ -2,6 +2,7 @@ import requests
 import allure
 from data import DataForCourier 
 from curl import Urls
+from data import LoginMessages
 
 @allure.feature("Логин курьера")
 class TestLoginCourier:
@@ -43,9 +44,7 @@ class TestLoginCourier:
         )
 
         assert response.status_code == 400
-        assert response.json()["message"] == (
-            "Недостаточно данных для входа"
-        )
+        assert response.json()["message"] == LoginMessages.NOT_ENOUGH_DATA
 
     @allure.title("Авторизация с пустым паролем")
     @allure.description("Проверка ошибки при отсутствии обязательного поля password.")
@@ -60,10 +59,8 @@ class TestLoginCourier:
         response = requests.post(Urls.LOGIN_COURIER_URL,data=payload)
 
         assert response.status_code == 400
-        assert response.json()["message"] == (
-            "Недостаточно данных для входа"
-        )
-
+        assert response.json()["message"] == LoginMessages.NOT_ENOUGH_DATA
+        
     @allure.title("Авторизация с неправильным логином")
     @allure.description("Проверка ошибки при вводе логина, которого нет в системе.")
     @allure.severity(allure.severity_level.NORMAL)
@@ -82,7 +79,7 @@ class TestLoginCourier:
         )
 
         assert response.status_code == 404
-        assert response.json()["message"] == ("Учетная запись не найдена")
+        assert response.json()["message"] == LoginMessages.ACCOUNT_NOT_FOUND
 
     @allure.title("Авторизация с неправильным паролем")
     @allure.description("Проверка ошибки при вводе неверного пароля.")
@@ -102,7 +99,7 @@ class TestLoginCourier:
         )
 
         assert response.status_code == 404
-        assert response.json()["message"] == ("Учетная запись не найдена")
+        assert response.json()["message"] == LoginMessages.ACCOUNT_NOT_FOUND
 
     @allure.title("Авторизация несуществующего курьера")
     @allure.description("Проверка ошибки при попытке авторизации пользователя, который не зарегистрирован.")
@@ -119,4 +116,4 @@ class TestLoginCourier:
         )
 
         assert response.status_code == 404
-        assert response.json()["message"] == ("Учетная запись не найдена")
+        assert response.json()["message"] == LoginMessages.ACCOUNT_NOT_FOUND

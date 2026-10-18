@@ -14,13 +14,12 @@ def courier_data(courier_helper):
     yield payload
     courier_helper.delete_courier(payload)
 
-
 @pytest.fixture
 def registered_courier(courier_data):
     response = requests.post(
-        Urls.CREATE_COURIER_URL,   # ← используйте Urls, а не «голый» CREATE_COURIER_URL
+        Urls.CREATE_COURIER_URL,
         data=courier_data,
     )
-    assert response.status_code == 201
+    
     yield courier_data
     

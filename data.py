@@ -77,3 +77,11 @@ class DataForCourier:
         "comment": "Order without specifying the color",
     },
 ]
+class CourierMessages:
+    LOGIN_ALREADY_USED = "Этот логин уже используется"
+    NOT_ENOUGH_DATA = "Недостаточно данных для создания учетной записи"
+
+class LoginMessages:
+    NOT_ENOUGH_DATA = "Недостаточно данных для входа"
+    ACCOUNT_NOT_FOUND = "Учетная запись не найдена"
+    

@@ -22,14 +22,7 @@ class CourierHelper:
         payload = self.generate_courier_data()
         response = requests.post(Urls.CREATE_COURIER_URL, data=payload)
 
-        if response.status_code == 201:
-            return [
-                payload["login"],
-                payload["password"],
-                payload["firstName"],
-            ]
-
-        return []
+        return response, payload
 
     def get_login_payload(self, courier_data):
         return {
@@ -46,7 +39,8 @@ class CourierHelper:
                 "password": courier_data["password"],
             }, timeout=10
         )
-
+        
+        #Здесь не получается убрать условие if, падает с ошибкой ERROR
         if login_response.status_code != 200:
             return
 
@@ -54,3 +48,4 @@ class CourierHelper:
 
         if courier_id is not None:
              requests.delete(f"{Urls.CREATE_COURIER_URL}/{courier_id}", timeout=10)
+             
