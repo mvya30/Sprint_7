@@ -29,23 +29,17 @@ class CourierHelper:
             "login": courier_data["login"],
             "password": courier_data["password"],
         }
-
     @allure.step("Удалить курьера")
     def delete_courier(self, courier_data):
         login_response = requests.post(
             Urls.LOGIN_COURIER_URL,
-            data={
-                "login": courier_data["login"],
-                "password": courier_data["password"],
-            }, timeout=10
+            data=self.get_login_payload(courier_data),
+            timeout=10,
         )
-        
-        #Здесь не получается убрать условие if, падает с ошибкой ERROR
-        if login_response.status_code != 200:
-            return
 
-        courier_id = login_response.json().get("id")
+        courier_id = login_response.json()["id"]
 
-        if courier_id is not None:
-             requests.delete(f"{Urls.CREATE_COURIER_URL}/{courier_id}", timeout=10)
-             
+        requests.delete(
+            f"{Urls.CREATE_COURIER_URL}/{courier_id}",
+            timeout=10,
+        )

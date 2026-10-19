@@ -8,18 +8,19 @@ from curl import Urls
 def courier_helper():
     return CourierHelper()
 
-@pytest.fixture
-def courier_data(courier_helper):
-    payload = courier_helper.generate_courier_data()
-    yield payload
-    courier_helper.delete_courier(payload)
 
 @pytest.fixture
-def registered_courier(courier_data):
-    response = requests.post(
-        Urls.CREATE_COURIER_URL,
-        data=courier_data,
+def courier_data(courier_helper):
+    return courier_helper.generate_courier_data()
+
+
+@pytest.fixture
+def registered_courier(courier_helper):
+    response, payload = (
+        courier_helper.register_new_courier_and_return_login_password()
     )
-    
-    yield courier_data
-    
+    assert response.status_code == 201
+
+    yield payload
+
+    courier_helper.delete_courier(payload)
